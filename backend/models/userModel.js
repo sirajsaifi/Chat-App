@@ -22,11 +22,6 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate: [validator.isEmail, 'Please provide a valid email.']
     },
-    gender: {
-        type: String,
-        enum: ['Male', 'Female'],
-        required: true
-    },
     profilePhoto: {
         type: String,
         default: ''
@@ -46,7 +41,12 @@ const userSchema = new mongoose.Schema({
             },
             message: 'Passwords are not same.'
         }
-    }
+    },
+    gender: {
+        type: String,
+        enum: ['Male', 'Female'],
+        required: true
+    },
 },
     // createdAt, updatedAt...mongoose will create these fields because of timesamps
     { timestamps: true }
@@ -64,7 +64,7 @@ userSchema.pre('save', async function (next) {
 userSchema.post('save', function (error, doc, next) {
     if (error.name === 'MongoServerError' && error.code === 11000) {
         const fieldName = Object.keys(error.keyValue)[0]
-        return next(new AppError(`User with this ${fieldName} already exists.`, 403))
+        return next(new AppError(`User with this ${fieldName} already exists.`, 409))
         // next(new Error(`User with this ${fieldName} already exists.`))
     } else {
         next(error)

@@ -1,31 +1,40 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import validator from "validator"
+import axios from "axios";
 import { useAuthContext } from "../context/AuthContext";
 
 const useSignup = () => {
+	// the below line is to show the loading icon in signup button which runs after submitting data
 	const [loading, setLoading] = useState(false);
 	const { setAuthUser } = useAuthContext();
 
-	const signup = async ({ fullName, username, password, confirmPassword, gender }) => {
-		const success = handleInputErrors({ fullName, username, password, confirmPassword, gender });
+	const signup = async ({ name, userName, email, password, passwordConfirm, gender }) => {
+		const success = await handleInputErrors({ name, userName, email, password, passwordConfirm, gender });
 		if (!success) return;
 
-		setLoading(true);
+		setLoading(true)
 		try {
-			const res = await fetch("/api/auth/signup", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ fullName, username, password, confirmPassword, gender }),
-			});
+			const res = await axios.post("/api/v1/auth/signup",
+				JSON.stringify({ name, userName, email, password, passwordConfirm, gender }),
+				{
+					headers: { "Content-Type": "application/json" },
+					withCredentials: true
+				});
 
-			const data = await res.json();
-			if (data.error) {
-				throw new Error(data.error);
+			// console.log(JSON.stringify(res))
+			if (res?.data?.status === 'success') {
+				toast.success('Successfully signed in!')
 			}
-			localStorage.setItem("chat-user", JSON.stringify(data));
-			setAuthUser(data);
+			// const data = await res.json();
+			// if (data.error) {
+			// 	// when throw is called then it jumps to catch(error) where it will be handled properly
+			// 	throw new Error(data.error)
+
+			setAuthUser(res);
+
 		} catch (error) {
-			toast.error(error.message);
+			toast.error(error.message)
 		} finally {
 			setLoading(false);
 		}
@@ -35,21 +44,37 @@ const useSignup = () => {
 };
 export default useSignup;
 
-function handleInputErrors({ fullName, username, password, confirmPassword, gender }) {
-	if (!fullName || !username || !password || !confirmPassword || !gender) {
+async function handleInputErrors({ name, userName, email, password, passwordConfirm, gender }) {
+	if (!name || !userName || !email || !password || !passwordConfirm || !gender) {
 		toast.error("Please fill in all fields");
 		return false;
 	}
 
-	if (password !== confirmPassword) {
+	if (password !== passwordConfirm) {
 		toast.error("Passwords do not match");
 		return false;
 	}
 
-	if (password.length < 6) {
-		toast.error("Password must be at least 6 characters");
+	if (password.length < 8) {
+		toast.error("Password must be at least 8 characters");
 		return false;
 	}
 
+	if (name.length > 15) {
+		toast.error("Name must not exceed 15 characters");
+		return false;
+	}
+
+	if (userName.length > 15) {
+		toast.error("Username must not exceed 15 characters")
+		return false;
+	}
+
+	if (!validator.isEmail(email)) {
+		toast.error('Please enter a valid email.')
+		return false
+	}
+
 	return true;
+
 }

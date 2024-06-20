@@ -20,6 +20,12 @@ app.use(express.json())
 //parsing cookies to the req.cookies
 app.use(cookieParser())
 
+// This ensures that the server properly handles requests from different origins (domains)
+// app.use(cors({
+//     origin: ["http://localhost:3000"], // frontend domains
+//     credentials: true
+// }))
+
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/messages', messageRouter)
 app.use('/api/v1/users', userRouter)
