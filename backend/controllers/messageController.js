@@ -2,6 +2,7 @@ import Conversation from '../models/conversationModel.js'
 import Message from '../models/messageModel.js'
 import catchAsync from '../utils/catchAsync.js'
 import AppError from '../utils/appError.js'
+import { getReceiverSocketId, io } from '../socket/socket.js'
 
 export const sendMessage = catchAsync(async (req, res) => {
     //receiving message from the user
@@ -44,11 +45,11 @@ export const sendMessage = catchAsync(async (req, res) => {
     await Promise.all([conversation.save(), newMessage.save()])
 
     // // SOCKET IO FUNCTIONALITY WILL GO HERE
-    // const receiverSocketId = getReceiverSocketId(receiverId)
-    // if (receiverSocketId) {
-    //     // io.to(<socket_id>).emit() used to send events to specific client
-    //     io.to(receiverSocketId).emit("newMessage", newMessage)
-    // }
+    const receiverSocketId = getReceiverSocketId(receiverId)
+    if (receiverSocketId) {
+        // io.to(<socket_id>).emit() used to send events to specific client
+        io.to(receiverSocketId).emit("newMessage", newMessage)
+    }
 
     res.status(201).json(newMessage)
     // res.status(201).json({

@@ -2,16 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* body {
-  background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
-    url("/bg.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-} */
-
 body {
-  background-image: url("bg6.jpg");
+  background-image: url("img/bg3.jpg");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;

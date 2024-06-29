@@ -35,23 +35,15 @@ const createSendToken = (user, statusCode, req, res) => {
     user.password = undefined
 
     res.status(statusCode).json({
-        status: 'success',
+        status: "success",
         token,
-        data: {
-            user
-        }
+        user
     })
 }
 
 
 export const signup = catchAsync(async (req, res) => {
-    let { profilePhoto } = req.body
-    const randomImageNumber = Math.floor(Math.random() * 5) + 1
-    // profilePhoto = path.join(__dirname, 'img', `img-${randomImageNumber}.jpg`)
-    profilePhoto = `img-${randomImageNumber}.jpg`
-    const newUser = await User.create({ ...req.body, profilePhoto })
-    const url = `${req.protocol}://${req.get('host')}/me`
-
+    const newUser = await User.create(req.body)
     createSendToken(newUser, 201, req, res)
 })
 
@@ -81,4 +73,3 @@ export const logout = catchAsync(async (req, res) => {
         status: 'success'
     })
 })
-

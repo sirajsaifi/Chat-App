@@ -1,45 +1,49 @@
-// import { useState } from "react";
-// import toast from "react-hot-toast";
-// import { useAuthContext } from "../context/AuthContext";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import axios from "axios";
 
-// const useLogin = () => {
-// 	const [loading, setLoading] = useState(false);
-// 	const { setAuthUser } = useAuthContext();
+import { useAuthContext } from "../context/AuthContext";
 
-// 	const login = async (username, password) => {
-// 		const success = handleInputErrors(username, password);
-// 		if (!success) return;
-// 		setLoading(true);
-// 		try {
-// 			const res = await fetch("/api/auth/login", {
-// 				method: "POST",
-// 				headers: { "Content-Type": "application/json" },
-// 				body: JSON.stringify({ username, password }),
-// 			});
+const useLogin = () => {
+	const [loading, setLoading] = useState(false);
+	const { authUser, setAuthUser } = useAuthContext();
 
-// 			const data = await res.json();
-// 			if (data.error) {
-// 				throw new Error(data.error);
-// 			}
+	const login = async (userName, password) => {
+		console.log(userName)
+		console.log(password)
+		const success = await handleInputErrors(userName, password);
+		if (!success) return;
+		setLoading(true);
+		try {
+			const res = await axios.post('/api/v1/auth/login',
+				JSON.stringify({ userName, password }),
+				{
+					headers: { "Content-Type": "application/json" },
+					// withCredentials: true
+				});
 
-// 			localStorage.setItem("chat-user", JSON.stringify(data));
-// 			setAuthUser(data);
-// 		} catch (error) {
-// 			toast.error(error.message);
-// 		} finally {
-// 			setLoading(false);
-// 		}
-// 	};
+			// console.log(res)
+			if (res?.data?.status === 'success') {
+				toast.success('Successfully signed in!')
+			}
+			localStorage.setItem("chat-user", JSON.stringify(res.data));
+			setAuthUser(res.data)
+		} catch (error) {
+			toast.error(error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-// 	return { loading, login };
-// };
-// export default useLogin;
+	return { loading, login };
+};
+export default useLogin;
 
-// function handleInputErrors(username, password) {
-// 	if (!username || !password) {
-// 		toast.error("Please fill in all fields");
-// 		return false;
-// 	}
+async function handleInputErrors(userName, password) {
+	if (!userName || !password) {
+		toast.error("Please fill in all fields");
+		return false;
+	}
 
-// 	return true;
-// }
+	return true;
+}

@@ -22,16 +22,12 @@ const useSignup = () => {
 					withCredentials: true
 				});
 
-			// console.log(JSON.stringify(res))
 			if (res?.data?.status === 'success') {
 				toast.success('Successfully signed in!')
 			}
-			// const data = await res.json();
-			// if (data.error) {
-			// 	// when throw is called then it jumps to catch(error) where it will be handled properly
-			// 	throw new Error(data.error)
 
-			setAuthUser(res);
+			localStorage.setItem("chat-user", JSON.stringify(res.data))
+			setAuthUser(res.data);
 
 		} catch (error) {
 			toast.error(error.message)

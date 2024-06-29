@@ -4,15 +4,17 @@ import App from "./App.jsx";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { AuthContextProvider } from "./context/AuthContext.jsx";
-// import { SocketContextProvider } from "./context/SocketContext.jsx";
+import { SocketContextProvider } from "./context/SocketContext.jsx";
+
+localStorage.debug = "socket.io-client:*";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthContextProvider>
-        {/* <SocketContextProvider> */}
-        <App />
-        {/* </SocketContextProvider> */}
+        <SocketContextProvider>
+          <App />
+        </SocketContextProvider>
       </AuthContextProvider>
     </BrowserRouter>
   </React.StrictMode>
