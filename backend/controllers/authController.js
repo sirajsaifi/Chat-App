@@ -1,10 +1,12 @@
 import jwt from 'jsonwebtoken'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import crypto from 'crypto'
 
 import User from '../models/userModel.js'
 import catchAsync from '../utils/catchAsync.js'
 import AppError from '../utils/appError.js'
+import { Email } from '../utils/email.js'
 
 
 const __filename = fileURLToPath(import.meta.url)
@@ -72,4 +74,70 @@ export const logout = catchAsync(async (req, res) => {
     res.status(200).json({
         status: 'success'
     })
+})
+
+
+export const forgotPassword = catchAsync(async (req, res, next) => {
+    //1) Get user based on POSTED Email
+    const user = await User.findOne({ email: req.body.email })
+    if (!user) {
+        return next(new AppError('No user found with such email', 404))
+    }
+
+    //2) Generate the random resest token
+    const resetToken = user.createPasswordResetToken()
+    //validateBeforeSave: false --> deactivate all validators that we specifies in our schema
+    //Please provide email and password error is shown if not deactivated
+    await user.save({ validateBeforeSave: false })
+
+    //3)send it to the user's email
+    // const resetURL = `${req.protocol}://${req.get('host')}/api/v1/auth/resetPassword/${resetToken}`
+    // // await new Email(user, resetURL).sendPasswordReset()
+
+    // res.status(200).json({
+    //     status: 'success',
+    //     tokenRest: resetToken
+    // })
+
+    try {
+        const resetURL = `${req.protocol}://${req.get('host')}/api/v1/auth/resetPassword/${resetToken}`
+        await new Email(user, resetURL).sendPasswordReset()
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Token sent to email!'
+        })
+    } catch (err) {
+        user.passwordResetToken = undefined
+        user.passwordResetExpires = undefined
+        await user.save({ validateBeforeSave: false })
+
+        return next(new AppError('There was an error sending the email. Try again later'), 500)
+    }
+})
+
+export const resetPassword = catchAsync(async (req, res, next) => {
+    //1) Get the user based on the token
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')    //params is the /:token in userRoutes
+
+    //finds user with the token
+    const user = await User.findOne({ passwordResetToken: hashedToken, passwordResetExpires: { $gte: Date.now() } })   //if passwordResetExpires > right now then it means that it hasn't expired right now...comparision done with mongoDB
+
+    //2) If token has not expired, and there is user, set the new password
+    if (!user) {
+        return next(new AppError('Token is invalid or has expired', 400))
+    }
+
+    user.password = req.body.password   //if next() is not called then it sets the password
+    user.passwordConfirm = req.body.passwordConfirm
+    user.passwordResetToken = undefined
+    user.passwordResetExpires = undefined
+    await user.save()     //the above only modifies the document and not save it...so this saves or updates the document
+    //we won't turn off the validator as we want the validators to confirm if password == passwordConfirm
+
+    //3) Update changedPasswordAt property for the user
+    //done in userModel.js
+
+    //4) Log the user in, send JWT
+    createSendToken(user, 200, req, res)
 })

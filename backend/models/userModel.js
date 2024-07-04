@@ -47,6 +47,9 @@ const userSchema = new mongoose.Schema({
         enum: ['Male', 'Female'],
         required: true
     },
+    passwordChangedAt: Date, //whenever someone change the password then this will be changed
+    passwordResetToken: String,
+    passwordResetExpires: Date,
 },
     // createdAt, updatedAt...mongoose will create these fields because of timesamps
     { timestamps: true }
@@ -73,6 +76,30 @@ userSchema.post('save', function (error, doc, next) {
 
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword)
+}
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {   //JWTTimestamp means when the JWT token was issued
+    if (this.passwordChangedAt) {
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10)    //10 is a base
+
+        return JWTTimestamp < changedTimestamp  //returns true if password was changed
+    }
+
+    return false    //means not changed
+}
+
+userSchema.methods.createPasswordResetToken = function () {
+    //32 is number of characters
+    const resetToken = crypto.randomBytes(32).toString('hex')   //converts into hexadecimal string
+
+    //encrypted password
+    this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+    //for testinng purposes
+    //console.log({resetToken}, this.passwordResetToken)
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000     //10 min, 60 is sec, 1000 millisecond
+
+    return resetToken   //unencrypted password
 }
 
 const User = mongoose.model('User', userSchema)

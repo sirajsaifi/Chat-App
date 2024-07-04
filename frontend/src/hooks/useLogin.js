@@ -9,8 +9,8 @@ const useLogin = () => {
 	const { authUser, setAuthUser } = useAuthContext();
 
 	const login = async (userName, password) => {
-		console.log(userName)
-		console.log(password)
+		// console.log(userName)
+		// console.log(password)
 		const success = await handleInputErrors(userName, password);
 		if (!success) return;
 		setLoading(true);
@@ -24,7 +24,7 @@ const useLogin = () => {
 
 			// console.log(res)
 			if (res?.data?.status === 'success') {
-				toast.success('Successfully signed in!')
+				toast.success('Successfully logged in!')
 			}
 			localStorage.setItem("chat-user", JSON.stringify(res.data));
 			setAuthUser(res.data)
