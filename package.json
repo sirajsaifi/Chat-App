@@ -5,7 +5,7 @@
 	"main": "backend/server.js",
 	"scripts": {
 		"start": "node backend/server.js",
-		"start:dev": "cross-env DEBUG=socket.io:server nodemon backend/server.js",
+		"start:dev": "cross-env DEBUG=socket.io:server NODE_ENV=development nodemon backend/server.js",
 		"start:prod": "cross-env NODE_ENV=production nodemon backend/server.js"
 	},
 	"type": "module",
@@ -13,6 +13,7 @@
 	"author": "Siraj Saifi",
 	"license": "ISC",
 	"dependencies": {
+		"@react-email/components": "^0.0.21",
 		"bcryptjs": "^2.4.3",
 		"cookie-parser": "^1.4.6",
 		"debug": "^4.3.5",

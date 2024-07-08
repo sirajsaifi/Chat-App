@@ -21,7 +21,12 @@ const useForgotPassword = () => {
                 toast.success('Reset Password sent to your email account.')
             }
         } catch (error) {
-            toast.error(error.message);
+            if (error.message === 'Request failed with status code 404') {
+                toast.error('No user found with such email')
+            }
+            else {
+                toast.error(error.message)
+            }
         } finally {
             setLoading(false);
         }

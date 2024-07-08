@@ -30,7 +30,12 @@ const useSignup = () => {
 			setAuthUser(res.data);
 
 		} catch (error) {
-			toast.error(error.message)
+			if (error.message === 'Request failed with status code 409') {
+				toast.error('User with this username or email already exist')
+			}
+			else {
+				toast.error(error.message)
+			}
 		} finally {
 			setLoading(false);
 		}

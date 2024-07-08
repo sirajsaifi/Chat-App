@@ -6,7 +6,7 @@ import crypto from 'crypto'
 import User from '../models/userModel.js'
 import catchAsync from '../utils/catchAsync.js'
 import AppError from '../utils/appError.js'
-import { Email } from '../utils/email.js'
+import Email from '../utils/email.js'
 
 
 const __filename = fileURLToPath(import.meta.url)
@@ -46,6 +46,8 @@ const createSendToken = (user, statusCode, req, res) => {
 
 export const signup = catchAsync(async (req, res) => {
     const newUser = await User.create(req.body)
+    const url = `${req.protocol}://${req.get('host')}`
+    await new Email(newUser, url).sendWelcome()
     createSendToken(newUser, 201, req, res)
 })
 
@@ -90,17 +92,8 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     //Please provide email and password error is shown if not deactivated
     await user.save({ validateBeforeSave: false })
 
-    //3)send it to the user's email
-    // const resetURL = `${req.protocol}://${req.get('host')}/api/v1/auth/resetPassword/${resetToken}`
-    // // await new Email(user, resetURL).sendPasswordReset()
-
-    // res.status(200).json({
-    //     status: 'success',
-    //     tokenRest: resetToken
-    // })
-
     try {
-        const resetURL = `${req.protocol}://${req.get('host')}/api/v1/auth/resetPassword/${resetToken}`
+        const resetURL = `${req.protocol}://${req.get('host')}/resetPassword?token=${resetToken}`
         await new Email(user, resetURL).sendPasswordReset()
 
         res.status(200).json({
@@ -118,7 +111,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
 
 export const resetPassword = catchAsync(async (req, res, next) => {
     //1) Get the user based on the token
-    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')    //params is the /:token in userRoutes
+    const hashedToken = crypto.createHash('sha256').update(req.query.token).digest('hex')
 
     //finds user with the token
     const user = await User.findOne({ passwordResetToken: hashedToken, passwordResetExpires: { $gte: Date.now() } })   //if passwordResetExpires > right now then it means that it hasn't expired right now...comparision done with mongoDB

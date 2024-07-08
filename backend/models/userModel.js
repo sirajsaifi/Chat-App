@@ -68,7 +68,6 @@ userSchema.post('save', function (error, doc, next) {
     if (error.name === 'MongoServerError' && error.code === 11000) {
         const fieldName = Object.keys(error.keyValue)[0]
         return next(new AppError(`User with this ${fieldName} already exists.`, 409))
-        // next(new Error(`User with this ${fieldName} already exists.`))
     } else {
         next(error)
     }

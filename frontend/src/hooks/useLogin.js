@@ -29,7 +29,12 @@ const useLogin = () => {
 			localStorage.setItem("chat-user", JSON.stringify(res.data));
 			setAuthUser(res.data)
 		} catch (error) {
-			toast.error(error.message);
+			if (error.message === 'Request failed with status code 401') {
+				toast.error('Incorrect username or password')
+			}
+			else {
+				toast.error(error.message)
+			}
 		} finally {
 			setLoading(false);
 		}
