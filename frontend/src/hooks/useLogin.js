@@ -9,8 +9,6 @@ const useLogin = () => {
 	const { authUser, setAuthUser } = useAuthContext();
 
 	const login = async (userName, password) => {
-		// console.log(userName)
-		// console.log(password)
 		const success = await handleInputErrors(userName, password);
 		if (!success) return;
 		setLoading(true);
@@ -19,10 +17,8 @@ const useLogin = () => {
 				JSON.stringify({ userName, password }),
 				{
 					headers: { "Content-Type": "application/json" },
-					// withCredentials: true
 				});
 
-			// console.log(res)
 			if (res?.data?.status === 'success') {
 				toast.success('Successfully logged in!')
 			}

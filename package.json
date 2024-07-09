@@ -1,12 +1,13 @@
 {
 	"name": "chat-app",
 	"version": "1.0.0",
-	"description": "",
+	"description": "This is a Chat App created by using Reactjs, Tailwind CSS and DaisyUI in the frontend and Node.js, Expressjs and MongoDB in the backend. Socket.io, Custom AI ChatBot and automatic email functionality is also implemented.",
 	"main": "backend/server.js",
 	"scripts": {
 		"start": "node backend/server.js",
 		"start:dev": "cross-env DEBUG=socket.io:server NODE_ENV=development nodemon backend/server.js",
-		"start:prod": "cross-env NODE_ENV=production nodemon backend/server.js"
+		"start:prod": "cross-env NODE_ENV=production nodemon backend/server.js",
+		"build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
 	},
 	"type": "module",
 	"keywords": [],

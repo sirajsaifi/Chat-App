@@ -16,7 +16,6 @@ const useForgotPassword = () => {
                 {
                     headers: { "Content-Type": "application/json" },
                 });
-            // console.log(res)
             if (res?.data?.status === 'success') {
                 toast.success('Reset Password sent to your email account.')
             }

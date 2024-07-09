@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     },
     profilePhoto: {
         type: String,
-        default: 'default.jpg'
+        // default: 'default.jpg'
     },
     password: {
         type: String,
@@ -54,6 +54,11 @@ const userSchema = new mongoose.Schema({
     // createdAt, updatedAt...mongoose will create these fields because of timesamps
     { timestamps: true }
 )
+
+userSchema.pre('save', async function (next) {
+    this.profilePhoto = `img${Math.floor(Math.random() * 5) + 1}.jpg`
+    next()
+})
 
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next()

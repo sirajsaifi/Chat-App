@@ -12,10 +12,8 @@ const useLogout = () => {
 		setLoading(true);
 		try {
 			const res = await axios.get('/api/v1/auth/logout',
-				// {},
 				{
 					headers: { "Content-Type": "application/json" },
-					// withCredentials: true 
 				}
 			)
 

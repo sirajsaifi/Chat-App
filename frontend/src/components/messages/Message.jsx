@@ -5,10 +5,6 @@ import useConversation from "../../zustand/useConversation";
 const Message = ({ message }) => {
   const { authUser } = useAuthContext();
   const { selectedConversation } = useConversation();
-
-  //   below one will bw either true or false
-  // console.log(authUser.user._id);
-  // console.log(message.senderId);
   const fromMe = message.senderId === authUser.user._id;
   const formattedTime = extractTime(message.createdAt);
 

@@ -62,7 +62,6 @@ const Login = () => {
           </div>
 
           <div className="text-center py-3">
-            {/* <button className="btn min-h-0 h-8 btn-outline btn-info"> */}
             <button
               className="btn min-h-0 h-8 btn-outline btn-info"
               disabled={loading}

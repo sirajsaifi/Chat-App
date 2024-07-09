@@ -11,13 +11,7 @@ const useGetConversations = () => {
 			setLoading(true);
 			try {
 				const res = await axios.get("/api/v1/users");
-				// const res = await fetch("/api/v1/users")
-				// const data = await res.json();
-				// if (data.error) {
-				//     throw new Error(data.error);
-				// }
 				setConversations(res.data);
-				// setConversations(res);
 			} catch (error) {
 				toast.error(error.message);
 			} finally {
