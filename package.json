@@ -29,5 +29,9 @@
 	"devDependencies": {
 		"cross-env": "^7.0.3",
 		"nodemon": "^3.0.3"
+	},
+	"browserslist": "> 0.5%, last 2 versions, not dead",
+	"engines": {
+		"node": ">=21.6.1"
 	}
 }
