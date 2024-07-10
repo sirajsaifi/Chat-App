@@ -7,7 +7,7 @@
 		"start": "node backend/server.js",
 		"start:dev": "cross-env DEBUG=socket.io:server NODE_ENV=development nodemon backend/server.js",
 		"start:prod": "cross-env NODE_ENV=production nodemon backend/server.js",
-		"build": "npm install && npm install --prefix frontend --production=false && npm run build --prefix frontend"
+		"build": "npm install --legacy-peer-deps && npm install --legacy-peer-deps --prefix frontend && npm run build --prefix frontend"
 	},
 	"type": "module",
 	"keywords": [],
